@@ -51,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               borderRadius: BorderRadius.circular(14),
                             ),
                             child: Center(
-                              child: CustomIcon(id: 'bell', size: 18, color: AppColors.ink),
+                              child: CustomIcon(id: 'bell', size: 18),
                             ),
                           ),
                         ),
@@ -78,23 +78,49 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // 3D-like Map
+          // Live Map
           Expanded(
-            child: FlutterMap(
-              mapController: _mapController,
-              options: MapOptions(
-                initialCenter: const LatLng(-26.1072, 28.057),
-                initialZoom: 15.5,
-                initialRotation: 0,
-                interactionOptions: const InteractionOptions(
-                  flags: InteractiveFlag.all,
-                ),
-              ),
+            child: Stack(
               children: [
-                TileLayer(
-                  urlTemplate: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+                FlutterMap(
+                  mapController: _mapController,
+                  options: MapOptions(
+                    initialCenter: const LatLng(-26.1072, 28.057),
+                    initialZoom: 15.5,
+                  ),
+                  children: [
+                    TileLayer(
+                      urlTemplate: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+                    ),
+                  ],
                 ),
-                // You can add real markers later when Firebase is connected
+
+                // Big Plus FAB (Camera / Report)
+                Positioned(
+                  bottom: 22,
+                  right: 18,
+                  child: GestureDetector(
+                    onTap: () => widget.onNav('camera'),
+                    child: Container(
+                      width: 66,
+                      height: 66,
+                      decoration: BoxDecoration(
+                        color: AppColors.lime,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.lime.withOpacity(0.8),
+                            blurRadius: 32,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                      child: const Center(
+                        child: Icon(Icons.add, size: 32, color: AppColors.limeT),
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

@@ -4,6 +4,7 @@ import 'features/auth/screens/login_screen.dart';
 import 'features/auth/screens/signup_screen.dart';
 import 'features/onboarding/screens/onboarding_screen.dart';
 import 'features/home/screens/home_screen.dart';
+import 'features/camera/screens/camera_screen.dart';
 
 void main() {
   runApp(const CityRescueApp());
@@ -51,6 +52,8 @@ class _CityRescueAppState extends State<CityRescueApp> {
         return OnboardingScreen(go: go);
       case 'home':
         return HomeScreen(onNav: go);
+      case 'camera':
+        return CameraScreen(onNav: go);
       default:
         return const Center(child: Text('Screen coming soon...'));
     }

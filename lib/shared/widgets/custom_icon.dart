@@ -9,19 +9,17 @@ class CustomIcon extends StatelessWidget {
     super.key,
     required this.id,
     this.size = 24,
-    this.color = Colors.black,
+    this.color = const Color(0xFF0C0C0C),
   });
 
   @override
   Widget build(BuildContext context) {
-    // Material Icons placeholder (matches React prototype icons)
     final iconMap = {
-      'pin': Icons.location_on,
-      'map': Icons.map,
-      'camera': Icons.camera_alt,
-      'clock': Icons.access_time,
-      'bell': Icons.notifications,
-      'user': Icons.person,
+      'map': Icons.map_outlined,
+      'camera': Icons.camera_alt_outlined,
+      'clock': Icons.access_time_outlined,
+      'bell': Icons.notifications_outlined,
+      'user': Icons.person_outline,
       'plus': Icons.add,
       'x': Icons.close,
       'back': Icons.arrow_back_ios_new,
@@ -29,18 +27,18 @@ class CustomIcon extends StatelessWidget {
       'chevron': Icons.chevron_right,
       'mail': Icons.mail_outline,
       'lock': Icons.lock_outline,
-      'eye': Icons.visibility,
-      'eyeOff': Icons.visibility_off,
-      'alert': Icons.warning_amber,
-      'zap': Icons.flash_on,
-      'drop': Icons.water_drop,
+      'eye': Icons.visibility_outlined,
+      'eyeOff': Icons.visibility_off_outlined,
+      'alert': Icons.warning_amber_outlined,
+      'zap': Icons.flash_on_outlined,
+      'drop': Icons.water_drop_outlined,
       'people': Icons.people_outline,
       'gear': Icons.settings_outlined,
-      'shield': Icons.security,
-      'send': Icons.send,
-      'link': Icons.link,
+      'shield': Icons.shield_outlined,
+      'send': Icons.send_outlined,
+      'link': Icons.link_outlined,
       'star': Icons.star_outline,
-      'photo': Icons.photo_camera,
+      'photo': Icons.photo_camera_outlined,
     };
 
     return Icon(
