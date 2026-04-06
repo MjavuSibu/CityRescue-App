@@ -7,7 +7,7 @@ import '../../../shared/widgets/status_bar.dart';
 import '../../../shared/widgets/custom_icon.dart';
 import '../../../shared/widgets/lime_button.dart';
 import '../../../shared/widgets/custom_field.dart';
-import 'package:flutter_svg/flutter_svg.dart';   // ← Needed for social logos
+import 'package:flutter_svg/flutter_svg.dart';
 
 class LoginScreen extends StatefulWidget {
   final Function(String) go;
@@ -23,6 +23,24 @@ class _LoginScreenState extends State<LoginScreen> {
   bool showPass = false;
   bool loading = false;
 
+  String? emailError;
+  String? passwordError;
+
+  void _validateAndSubmit() {
+    setState(() {
+      emailError = emailController.text.trim().isEmpty ? 'Email is required' : null;
+      passwordError = passController.text.isEmpty ? 'Password is required' : null;
+    });
+
+    if (emailError != null || passwordError != null) return;
+
+    setState(() => loading = true);
+    Future.delayed(const Duration(milliseconds: 1600), () {
+      setState(() => loading = false);
+      widget.go('home');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -30,78 +48,63 @@ class _LoginScreenState extends State<LoginScreen> {
       color: AppColors.white,
       child: Column(
         children: [
-          const StatusBar(),   // Now completely empty as requested
-
+          const StatusBar(),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(28, 32, 28, 40),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Logo with Lottie location pin
                   Container(
                     margin: const EdgeInsets.only(bottom: 38),
                     child: Row(
                       children: [
-                        Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: AppColors.lime,
-                            borderRadius: BorderRadius.circular(18),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.lime.withOpacity(0.7),
-                                blurRadius: 24,
-                                offset: const Offset(0, 8),
-                              ),
-                            ],
-                          ),
-                          child: Center(
-                            child: LottieIcon(
-                              assetPath: 'assets/animations/location_pin.json',
-                              size: 28,
-                              tint: AppColors.limeT,
-                            ),
-                          ),
+                        LottieIcon(
+                          assetPath: 'assets/animations/location_pin.json',
+                          size: 80,
+                          tint: const Color.fromARGB(255, 109, 186, 2),
                         ),
-                        const SizedBox(width: 14),
+                        const SizedBox(width: 16),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               'CityRescue',
-                              style: AppTextStyles.heading(size: 21, letterSpacing: -0.5),
+                              style: AppTextStyles.heading(size: 27, letterSpacing: -0.6),
                             ),
                             Text(
                               'Civic Tech Platform',
-                              style: AppTextStyles.body(size: 11, weight: FontWeight.w500, color: AppColors.ink3),
+                              style: AppTextStyles.body(
+                                size: 13,
+                                weight: FontWeight.w500,
+                                color: AppColors.ink3,
+                              ),
                             ),
                           ],
                         ),
                       ],
                     ),
                   ),
-
-                  Text('Welcome back.', style: AppTextStyles.heading(size: 36, letterSpacing: -0.8)),
-                  const SizedBox(height: 8),
                   Text(
                     'Sign in to report and track hazards in your city.',
                     style: AppTextStyles.body(size: 15, color: AppColors.ink2),
                   ),
-
                   const SizedBox(height: 32),
-
                   CustomField(
                     label: 'Username or email address',
                     controller: emailController,
-                    placeholder: 'you@example.com',
+                    placeholder: '',
                     icon: CustomIcon(id: 'mail', size: 16, color: AppColors.ink3),
                   ),
-
+                  if (emailError != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4, left: 4),
+                      child: Text(
+                        emailError!,
+                        style: const TextStyle(color: Colors.red, fontSize: 12),
+                      ),
+                    ),
                   const SizedBox(height: 24),
-
-                  // Password row with Forgot password?
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -115,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () {}, // you can add navigation later
+                        onTap: () {},
                         child: Text(
                           'Forgot password?',
                           style: TextStyle(
@@ -127,10 +130,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
                   ),
-
                   CustomField(
                     controller: passController,
-                    placeholder: '••••••••',
+                    placeholder: '',
                     obscureText: !showPass,
                     icon: CustomIcon(id: 'lock', size: 16, color: AppColors.ink3),
                     right: GestureDetector(
@@ -142,24 +144,21 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-
+                  if (passwordError != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4, left: 4),
+                      child: Text(
+                        passwordError!,
+                        style: const TextStyle(color: Colors.red, fontSize: 12),
+                      ),
+                    ),
                   const SizedBox(height: 32),
-
                   LimeButton(
                     text: loading ? 'Signing in…' : 'Sign In',
-                    onPressed: () {
-                      setState(() => loading = true);
-                      Future.delayed(const Duration(milliseconds: 1600), () {
-                        setState(() => loading = false);
-                        widget.go('home');
-                      });
-                    },
+                    onPressed: _validateAndSubmit,
                     isLoading: loading,
                   ),
-
                   const SizedBox(height: 20),
-
-                  // ── OR CONTINUE WITH ──
                   Row(
                     children: [
                       Expanded(child: Divider(color: AppColors.border, thickness: 1)),
@@ -173,10 +172,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       Expanded(child: Divider(color: AppColors.border, thickness: 1)),
                     ],
                   ),
-
                   const SizedBox(height: 18),
-
-                  // Social Buttons with logos
                   Row(
                     children: [
                       _SocialButton(
@@ -198,9 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 36),
-
                   Center(
                     child: RichText(
                       text: TextSpan(
@@ -209,7 +203,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           const TextSpan(text: 'No account? '),
                           TextSpan(
                             text: 'Create one',
-                            style: TextStyle(color: AppColors.limeD, fontWeight: FontWeight.w700),
+                            style: const TextStyle(color: AppColors.limeD, fontWeight: FontWeight.w700),
                             recognizer: TapGestureRecognizer()..onTap = () => widget.go('signup'),
                           ),
                         ],
@@ -226,13 +220,17 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-// Small helper for social buttons
 class _SocialButton extends StatelessWidget {
   final String label;
   final String svg;
   final VoidCallback onTap;
 
-  const _SocialButton({required this.label, required this.svg, required this.onTap});
+  const _SocialButton({
+    Key? key,
+    required this.label,
+    required this.svg,
+    required this.onTap,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -253,7 +251,11 @@ class _SocialButton extends StatelessWidget {
               const SizedBox(width: 9),
               Text(
                 label,
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.ink),
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.ink,
+                ),
               ),
             ],
           ),
