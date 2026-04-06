@@ -5,7 +5,6 @@ import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/lottie_icon.dart';
 import '../../../shared/widgets/status_bar.dart';
 import '../../../shared/widgets/custom_icon.dart';
-import '../../../shared/widgets/lime_button.dart';
 import '../../../shared/widgets/custom_field.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -22,24 +21,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController passController = TextEditingController();
   bool showPass = false;
   bool loading = false;
-
-  String? emailError;
-  String? passwordError;
-
-  void _validateAndSubmit() {
-    setState(() {
-      emailError = emailController.text.trim().isEmpty ? 'Email is required' : null;
-      passwordError = passController.text.isEmpty ? 'Password is required' : null;
-    });
-
-    if (emailError != null || passwordError != null) return;
-
-    setState(() => loading = true);
-    Future.delayed(const Duration(milliseconds: 1600), () {
-      setState(() => loading = false);
-      widget.go('home');
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         LottieIcon(
                           assetPath: 'assets/animations/location_pin.json',
-                          size: 80,
+                          size: 78,
                           tint: const Color.fromARGB(255, 109, 186, 2),
                         ),
                         const SizedBox(width: 16),
@@ -96,14 +77,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     placeholder: '',
                     icon: CustomIcon(id: 'mail', size: 16, color: AppColors.ink3),
                   ),
-                  if (emailError != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4, left: 4),
-                      child: Text(
-                        emailError!,
-                        style: const TextStyle(color: Colors.red, fontSize: 12),
-                      ),
-                    ),
                   const SizedBox(height: 24),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -144,20 +117,53 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                  if (passwordError != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4, left: 4),
-                      child: Text(
-                        passwordError!,
-                        style: const TextStyle(color: Colors.red, fontSize: 12),
+                  const SizedBox(height: 32),
+
+                  // Sign In Button - using GestureDetector (same fix that worked for Create Account)
+                  GestureDetector(
+                    onTap: () {
+                      setState(() => loading = true);
+                      Future.delayed(const Duration(milliseconds: 1600), () {
+                        setState(() => loading = false);
+                        widget.go('home');
+                      });
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 18),
+                      decoration: BoxDecoration(
+                        color: AppColors.lime,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.lime.withOpacity(0.55),
+                            blurRadius: 32,
+                            offset: const Offset(0, 12),
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: loading
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.5,
+                                  color: AppColors.limeT,
+                                ),
+                              )
+                            : Text(
+                                'Sign In',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.limeT,
+                                ),
+                              ),
                       ),
                     ),
-                  const SizedBox(height: 32),
-                  LimeButton(
-                    text: loading ? 'Signing in…' : 'Sign In',
-                    onPressed: _validateAndSubmit,
-                    isLoading: loading,
                   ),
+
                   const SizedBox(height: 20),
                   Row(
                     children: [
@@ -226,11 +232,11 @@ class _SocialButton extends StatelessWidget {
   final VoidCallback onTap;
 
   const _SocialButton({
-    Key? key,
+    super.key,
     required this.label,
     required this.svg,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

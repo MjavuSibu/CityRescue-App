@@ -3,6 +3,7 @@ import 'core/constants/app_colors.dart';
 import 'features/auth/screens/login_screen.dart';
 import 'features/auth/screens/signup_screen.dart';
 import 'features/onboarding/screens/onboarding_screen.dart';
+import 'features/home/screens/home_screen.dart';
 
 void main() {
   runApp(const CityRescueApp());
@@ -19,7 +20,6 @@ class _CityRescueAppState extends State<CityRescueApp> {
   String currentScreen = 'login';
 
   void go(String screen) {
-    print('🔄 go() called with: $screen');   // ← Debug print
     setState(() {
       currentScreen = screen;
     });
@@ -42,7 +42,6 @@ class _CityRescueAppState extends State<CityRescueApp> {
   }
 
   Widget _buildCurrentScreen() {
-    print('Current screen: $currentScreen');   // ← Debug print
     switch (currentScreen) {
       case 'login':
         return LoginScreen(go: go);
@@ -50,6 +49,8 @@ class _CityRescueAppState extends State<CityRescueApp> {
         return SignupScreen(go: go);
       case 'onboarding':
         return OnboardingScreen(go: go);
+      case 'home':
+        return HomeScreen(onNav: go);
       default:
         return const Center(child: Text('Screen coming soon...'));
     }

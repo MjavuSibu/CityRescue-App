@@ -4,7 +4,6 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/status_bar.dart';
 import '../../../shared/widgets/custom_icon.dart';
-import '../../../shared/widgets/lime_button.dart';
 import '../../../shared/widgets/custom_field.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -124,17 +123,50 @@ class _SignupScreenState extends State<SignupScreen> {
                       style: TextStyle(fontSize: 12, color: AppColors.ink3),
                     ),
                   ],
-                  const SizedBox(height: 28),
-                  LimeButton(
-                    text: loading ? 'Creating account…' : 'Create Account',
-                    onPressed: () {
+                  const SizedBox(height: 40),
+                  // Create Account button using GestureDetector (same logic as "Create one")
+                  GestureDetector(
+                    onTap: () {
                       setState(() => loading = true);
                       Future.delayed(const Duration(milliseconds: 1600), () {
                         setState(() => loading = false);
                         widget.go('onboarding');
                       });
                     },
-                    isLoading: loading,
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 18),
+                      decoration: BoxDecoration(
+                        color: AppColors.lime,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.lime.withOpacity(0.55),
+                            blurRadius: 32,
+                            offset: const Offset(0, 12),
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: loading
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.5,
+                                  color: AppColors.limeT,
+                                ),
+                              )
+                            : Text(
+                                'Create Account',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.limeT,
+                                ),
+                              ),
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 24),
                   Center(

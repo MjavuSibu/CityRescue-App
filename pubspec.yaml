@@ -25,6 +25,8 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/animations/location_pin.json     # ← Your Lottie file for login + onboarding
-    # Add more Lottie files here later if you want orbiting animations
+    - assets/animations/location_pin.json     
+    - assets/animations/camera_scan.json
+    - assets/animations/orbiting_icon.json
+    - assets/animations/onboarding_pin.json
 
