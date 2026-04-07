@@ -137,7 +137,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   children: [
                     // Skip button (already working as GestureDetector)
                     GestureDetector(
-                      onTap: () => widget.go('home'),
+                      onTap: () => widget.go('login'),
                       child: Text(
                         'Skip',
                         style: TextStyle(
