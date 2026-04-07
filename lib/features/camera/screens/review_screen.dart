@@ -1,17 +1,69 @@
-import 'package:city_rescue/shared/widgets/custom_icon.dart';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/status_bar.dart';
-import '../../../shared/widgets/lottie_icon.dart';
 import '../../../shared/widgets/lime_button.dart';
 
-class ReviewScreen extends StatelessWidget {
+class ReviewScreen extends StatefulWidget {
   final Function(String) onNav;
-  const ReviewScreen({super.key, required this.onNav});
+  final String? imagePath;
+  final String? detectedHazard;
+
+  const ReviewScreen({
+    super.key,
+    required this.onNav,
+    this.imagePath,
+    this.detectedHazard,
+  });
+
+  @override
+  State<ReviewScreen> createState() => _ReviewScreenState();
+}
+
+class _ReviewScreenState extends State<ReviewScreen> {
+  String locationText = 'Getting location...';
+  String departmentText = 'Routing to relevant department...';
+
+  @override
+  void initState() {
+    super.initState();
+    _getCurrentLocation();
+  }
+
+  Future<void> _getCurrentLocation() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      setState(() => locationText = 'Location services disabled');
+      return;
+    }
+
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      setState(() => locationText = 'Location permission denied');
+      return;
+    }
+
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+
+    setState(() {
+      locationText = '${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}';
+      // In real app, you would use reverse geocoding or Firebase to determine department
+      departmentText = 'City of Johannesburg — Relevant Dept';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final hazardName = widget.detectedHazard ?? 'Unknown Hazard';
+
     return Container(
       height: MediaQuery.of(context).size.height,
       color: AppColors.bg,
@@ -23,7 +75,7 @@ class ReviewScreen extends StatelessWidget {
             child: Row(
               children: [
                 GestureDetector(
-                  onTap: () => onNav('camera'),
+                  onTap: () => Navigator.pop(context),
                   child: Container(
                     width: 42,
                     height: 42,
@@ -50,38 +102,29 @@ class ReviewScreen extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(22, 0, 22, 24),
               child: Column(
                 children: [
-                  // Photo preview
-                  Container(
-                    height: 230,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(26),
-                      boxShadow: [
-                        BoxShadow(color: Colors.black.withOpacity(0.16), blurRadius: 60),
-                      ],
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(26),
-                      child: Container(
-                        color: const Color(0xFF2E2F3C),
-                        child: const Center(
-                          child: Text(
-                            'Captured Photo Preview',
-                            style: TextStyle(color: Colors.white70, fontSize: 16),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(26),
+                    child: widget.imagePath != null
+                        ? Image.file(
+                            File(widget.imagePath!),
+                            height: 260,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          )
+                        : Container(
+                            height: 260,
+                            color: Colors.grey[300],
+                            child: const Center(
+                              child: Text('No image captured', style: TextStyle(color: Colors.grey)),
+                            ),
                           ),
-                        ),
-                      ),
-                    ),
                   ),
                   const SizedBox(height: 18),
 
-                  // Hazard info card
                   Container(
                     decoration: BoxDecoration(
                       color: AppColors.white,
                       borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 24),
-                      ],
                     ),
                     padding: const EdgeInsets.all(20),
                     child: Column(
@@ -100,63 +143,23 @@ class ReviewScreen extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: 14),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Pothole', style: AppTextStyles.heading(size: 28, letterSpacing: -0.6)),
-                                Text('Road & Infrastructure Hazard', style: TextStyle(color: AppColors.ink2, fontSize: 13)),
-                              ],
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(hazardName, style: AppTextStyles.heading(size: 28, letterSpacing: -0.6)),
+                                  Text('Road & Infrastructure Hazard', style: TextStyle(color: AppColors.ink2, fontSize: 13)),
+                                ],
+                              ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 18),
                         const Divider(),
                         const SizedBox(height: 12),
-                        _InfoRow(icon: 'pin', label: 'Location', value: 'Current Location'),
-                        _InfoRow(icon: 'send', label: 'Auto-routed to', value: 'City of Johannesburg — Roads Dept'),
-                        _InfoRow(icon: 'shield', label: 'Severity', value: 'High — Active traffic hazard'),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-
-                  // Impact card
-                  Container(
-                    decoration: BoxDecoration(
-                      color: AppColors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: AppColors.lime, width: 1.5),
-                    ),
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            color: AppColors.lime.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: const Center(
-                            child: Icon(Icons.people, color: AppColors.limeD, size: 22),
-                          ),
-                        ),
-                        const SizedBox(width: 14),
-                        const Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '100+ commuters could be helped by this report',
-                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
-                              ),
-                              Text(
-                                'High-traffic zone · Response expected within 48h',
-                                style: TextStyle(fontSize: 12, color: AppColors.ink3),
-                              ),
-                            ],
-                          ),
-                        ),
+                        _InfoRow(label: 'Location', value: locationText),
+                        _InfoRow(label: 'Auto-routed to', value: departmentText),
+                        _InfoRow(label: 'Severity', value: 'High — Active traffic hazard'),
                       ],
                     ),
                   ),
@@ -168,7 +171,7 @@ class ReviewScreen extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(22, 0, 22, 32),
             child: LimeButton(
               text: 'Confirm & Submit Report',
-              onPressed: () => onNav('submit'),
+              onPressed: () => widget.onNav('submit'),
             ),
           ),
         ],
@@ -178,15 +181,10 @@ class ReviewScreen extends StatelessWidget {
 }
 
 class _InfoRow extends StatelessWidget {
-  final String icon;
   final String label;
   final String value;
 
-  const _InfoRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
+  const _InfoRow({required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -201,28 +199,19 @@ class _InfoRow extends StatelessWidget {
               color: AppColors.surface,
               borderRadius: BorderRadius.circular(13),
             ),
-            child: Center(
-              child: CustomIcon(id: icon, size: 16, color: AppColors.ink2),
+            child: const Center(
+              child: Icon(Icons.location_on, size: 16, color: AppColors.ink2),
             ),
           ),
           const SizedBox(width: 14),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 10.5,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.ink3,
-                  letterSpacing: 1,
-                ),
-              ),
-              Text(
-                value,
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-              ),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label, style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w800, color: AppColors.ink3)),
+                Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+              ],
+            ),
           ),
         ],
       ),

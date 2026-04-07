@@ -130,7 +130,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       setState(() => loading = true);
                       Future.delayed(const Duration(milliseconds: 1600), () {
                         setState(() => loading = false);
-                        widget.go('onboarding');
+                        widget.go('home');
                       });
                     },
                     child: Container(

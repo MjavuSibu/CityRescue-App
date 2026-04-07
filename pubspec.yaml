@@ -15,6 +15,8 @@ dependencies:
   flutter_map: ^7.0.0               # ← We'll use this for the LiveMap (Leaflet equivalent)
   latlong2: ^0.9.1              # ← For handling lat/lng coordinates with flutter_map
   flutter_svg: ^2.2.4
+  camera: ^0.10.6
+  geolocator: ^12.0.0
 
 dev_dependencies:
   flutter_test:

@@ -158,7 +158,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               curve: Curves.easeInOut,
                             );
                           } else {
-                            widget.go('home');
+                            widget.go('login');
                           }
                         },
                         child: Container(
