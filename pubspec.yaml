@@ -2,7 +2,6 @@ name: city_rescue
 description: CityRescue - Civic Tech Platform
 
 publish_to: 'none'
-
 version: 1.0.0+1
 
 environment:
@@ -11,12 +10,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  lottie: ^3.1.2                    # ← For animated icons (login pin + onboarding)
-  flutter_map: ^7.0.0               # ← We'll use this for the LiveMap (Leaflet equivalent)
-  latlong2: ^0.9.1              # ← For handling lat/lng coordinates with flutter_map
+  lottie: ^3.1.2
+  mapbox_maps_flutter: ^2.3.0      # ← Replaces flutter_map
+  geolocator: ^12.0.0
   flutter_svg: ^2.2.4
   camera: ^0.10.6
-  geolocator: ^12.0.0
 
 dev_dependencies:
   flutter_test:
@@ -25,10 +23,8 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
   assets:
-    - assets/animations/location_pin.json     
+    - assets/animations/location_pin.json
     - assets/animations/camera_scan.json
     - assets/animations/orbiting_icon.json
     - assets/animations/onboarding_pin.json
-
