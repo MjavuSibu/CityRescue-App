@@ -1,3 +1,4 @@
+import 'package:city_rescue/features/submit/screens/submit_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'core/constants/app_colors.dart';
@@ -67,6 +68,8 @@ class _CityRescueAppState extends State<CityRescueApp> {
         return CameraScreen(onNav: go);
       case 'review':
         return ReviewScreen(onNav: go);
+        case 'submit':
+        return SubmitScreen(onNav: go);
       default:
         return const Center(child: Text('Screen coming soon...'));
     }
