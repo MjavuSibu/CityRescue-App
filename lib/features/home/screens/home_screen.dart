@@ -19,7 +19,6 @@ class _HomeScreenState extends State<HomeScreen> {
   MapboxMap? _mapboxMap;
   bool _locating = false;
 
-  // Default: Fourways, Sandton, Johannesburg
   final CameraOptions _initialCamera = CameraOptions(
     center: Point(coordinates: Position(28.0106, -26.0274)),
     zoom: 17.0,
@@ -29,20 +28,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _onMapCreated(MapboxMap mapboxMap) {
     _mapboxMap = mapboxMap;
-
-    // Enable 3D buildings
-    _mapboxMap!.style.addLayer(
-      FillExtrusionLayer(
-        id: "3d-buildings",
-        sourceId: "composite",
-      )
-        ..sourceLayer = "building"
-        ..fillExtrusionOpacity = 0.8
-        ..fillExtrusionHeight = 0.0
-        ..fillExtrusionBase = 0.0
-        ..fillExtrusionColor = 0xFFCDD4D9,
-    );
-
     _goToUserLocation();
   }
 

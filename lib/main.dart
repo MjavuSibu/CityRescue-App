@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'core/constants/app_colors.dart';
 import 'features/auth/screens/login_screen.dart';
 import 'features/auth/screens/signup_screen.dart';
@@ -8,7 +9,13 @@ import 'features/camera/screens/camera_screen.dart';
 import 'features/camera/screens/review_screen.dart';
 import 'features/splash/screens/splash_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  MapboxOptions.setAccessToken(
+    'pk.eyJ1Ijoic2lidWxlbGVtamF2dSIsImEiOiJjbW9td2hpYmowMmU2MnFzNmYyYjY1eG00In0.YY4AeTYm70zkqBVHGuaWVA',
+  );
+
   runApp(const CityRescueApp());
 }
 

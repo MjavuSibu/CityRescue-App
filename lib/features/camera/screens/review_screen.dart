@@ -10,12 +10,18 @@ class ReviewScreen extends StatefulWidget {
   final Function(String) onNav;
   final String? imagePath;
   final String? detectedHazard;
+  final String? severity;
+  final String? department;
+  final String? description;
 
   const ReviewScreen({
     super.key,
     required this.onNav,
     this.imagePath,
     this.detectedHazard,
+    this.severity,
+    this.department,
+    this.description,
   });
 
   @override
@@ -54,7 +60,8 @@ class _ReviewScreenState extends State<ReviewScreen> {
     );
 
     setState(() {
-      locationText = '${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}';
+      locationText =
+          '${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}';
       // In real app, you would use reverse geocoding or Firebase to determine department
       departmentText = 'City of Johannesburg — Relevant Dept';
     });
@@ -115,12 +122,12 @@ class _ReviewScreenState extends State<ReviewScreen> {
                             height: 260,
                             color: Colors.grey[300],
                             child: const Center(
-                              child: Text('No image captured', style: TextStyle(color: Colors.grey)),
+                              child: Text('No image captured',
+                                  style: TextStyle(color: Colors.grey)),
                             ),
                           ),
                   ),
                   const SizedBox(height: 18),
-
                   Container(
                     decoration: BoxDecoration(
                       color: AppColors.white,
@@ -139,7 +146,8 @@ class _ReviewScreenState extends State<ReviewScreen> {
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: const Center(
-                                child: Icon(Icons.warning_amber, color: AppColors.limeD, size: 28),
+                                child: Icon(Icons.warning_amber,
+                                    color: AppColors.limeD, size: 28),
                               ),
                             ),
                             const SizedBox(width: 14),
@@ -147,8 +155,12 @@ class _ReviewScreenState extends State<ReviewScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(hazardName, style: AppTextStyles.heading(size: 28, letterSpacing: -0.6)),
-                                  Text('Road & Infrastructure Hazard', style: TextStyle(color: AppColors.ink2, fontSize: 13)),
+                                  Text(hazardName,
+                                      style: AppTextStyles.heading(
+                                          size: 28, letterSpacing: -0.6)),
+                                  Text('Road & Infrastructure Hazard',
+                                      style: TextStyle(
+                                          color: AppColors.ink2, fontSize: 13)),
                                 ],
                               ),
                             ),
@@ -158,8 +170,14 @@ class _ReviewScreenState extends State<ReviewScreen> {
                         const Divider(),
                         const SizedBox(height: 12),
                         _InfoRow(label: 'Location', value: locationText),
-                        _InfoRow(label: 'Auto-routed to', value: departmentText),
-                        _InfoRow(label: 'Severity', value: 'High — Active traffic hazard'),
+                        _InfoRow(
+                            label: 'Auto-routed to',
+                            value: widget.department ?? departmentText),
+                        _InfoRow(
+                            label: 'Severity',
+                            value: widget.severity ?? 'Unknown'),
+                        _InfoRow(
+                            label: 'Details', value: widget.description ?? ''),
                       ],
                     ),
                   ),
@@ -208,8 +226,14 @@ class _InfoRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w800, color: AppColors.ink3)),
-                Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                Text(label,
+                    style: TextStyle(
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.ink3)),
+                Text(value,
+                    style: const TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.w500)),
               ],
             ),
           ),
