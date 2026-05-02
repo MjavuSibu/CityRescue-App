@@ -9,6 +9,9 @@ import 'features/home/screens/home_screen.dart';
 import 'features/camera/screens/camera_screen.dart';
 import 'features/camera/screens/review_screen.dart';
 import 'features/splash/screens/splash_screen.dart';
+import 'features/tracking/screens/tracking_screen.dart';
+import 'features/notifications/screens/notifications_screen.dart';
+import 'features/profile/screens/profile_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -68,8 +71,14 @@ class _CityRescueAppState extends State<CityRescueApp> {
         return CameraScreen(onNav: go);
       case 'review':
         return ReviewScreen(onNav: go);
-        case 'submit':
+      case 'submit':
         return SubmitScreen(onNav: go);
+      case 'tracking':
+        return TrackingScreen(onNav: go);
+      case 'notifications':
+        return NotificationsScreen(onNav: go);
+      case 'profile':
+        return ProfileScreen(onNav: go);
       default:
         return const Center(child: Text('Screen coming soon...'));
     }

@@ -34,24 +34,27 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _goToUserLocation() async {
     setState(() => _locating = true);
     try {
-      bool serviceEnabled = await geo.Geolocator.isLocationServiceEnabled();
+      bool serviceEnabled =
+          await geo.Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) return;
 
-      geo.LocationPermission permission = await geo.Geolocator.checkPermission();
+      geo.LocationPermission permission =
+          await geo.Geolocator.checkPermission();
       if (permission == geo.LocationPermission.denied) {
         permission = await geo.Geolocator.requestPermission();
         if (permission == geo.LocationPermission.denied) return;
       }
-
       if (permission == geo.LocationPermission.deniedForever) return;
 
-      final geo.Position pos = await geo.Geolocator.getCurrentPosition(
+      final geo.Position pos =
+          await geo.Geolocator.getCurrentPosition(
         desiredAccuracy: geo.LocationAccuracy.high,
       );
 
       await _mapboxMap?.flyTo(
         CameraOptions(
-          center: Point(coordinates: Position(pos.longitude, pos.latitude)),
+          center:
+              Point(coordinates: Position(pos.longitude, pos.latitude)),
           zoom: 17.5,
           pitch: 60.0,
           bearing: 30.0,
@@ -59,10 +62,21 @@ class _HomeScreenState extends State<HomeScreen> {
         MapAnimationOptions(duration: 1500),
       );
     } catch (_) {
-      // Fall back to default Johannesburg location silently
     } finally {
       if (mounted) setState(() => _locating = false);
     }
+  }
+
+  void _confirmSignOut(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (_) => _HomeSignOutSheet(onConfirm: () {
+        Navigator.pop(context);
+        widget.onNav('login');
+      }),
+    );
   }
 
   @override
@@ -77,7 +91,8 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: const EdgeInsets.fromLTRB(22, 52, 22, 14),
             decoration: BoxDecoration(
               color: AppColors.white,
-              border: Border(bottom: BorderSide(color: AppColors.border)),
+              border:
+                  Border(bottom: BorderSide(color: AppColors.border)),
             ),
             child: Column(
               children: [
@@ -85,9 +100,29 @@ class _HomeScreenState extends State<HomeScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Hazard Map', style: AppTextStyles.heading(size: 24)),
+                    Text('Hazard Map',
+                        style: AppTextStyles.heading(size: 24)),
                     Row(
                       children: [
+                        // ── Sign Out ──────────────────────────
+                        GestureDetector(
+                          onTap: () => _confirmSignOut(context),
+                          child: Container(
+                            width: 42,
+                            height: 42,
+                            decoration: BoxDecoration(
+                              color: AppColors.surface,
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            child: const Center(
+                              child: Icon(Icons.logout_rounded,
+                                  size: 18, color: AppColors.ink2),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+
+                        // ── Bell ──────────────────────────────
                         GestureDetector(
                           onTap: () => widget.onNav('notifications'),
                           child: Container(
@@ -97,10 +132,14 @@ class _HomeScreenState extends State<HomeScreen> {
                               color: AppColors.surface,
                               borderRadius: BorderRadius.circular(14),
                             ),
-                            child: Center(child: CustomIcon(id: 'bell', size: 18)),
+                            child: Center(
+                                child: CustomIcon(
+                                    id: 'bell', size: 18)),
                           ),
                         ),
                         const SizedBox(width: 10),
+
+                        // ── Profile ───────────────────────────
                         GestureDetector(
                           onTap: () => widget.onNav('profile'),
                           child: Container(
@@ -162,12 +201,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: _locating
                           ? const Padding(
                               padding: EdgeInsets.all(12),
-                              child: CircularProgressIndicator(strokeWidth: 2),
+                              child: CircularProgressIndicator(
+                                  strokeWidth: 2),
                             )
-                          : const Icon(
-                              Icons.my_location_rounded,
-                              size: 22,
-                            ),
+                          : const Icon(Icons.my_location_rounded,
+                              size: 22),
                     ),
                   ),
                 ),
@@ -193,7 +231,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                       child: const Center(
-                        child: Icon(Icons.add, size: 32, color: AppColors.limeT),
+                        child: Icon(Icons.add,
+                            size: 32, color: AppColors.limeT),
                       ),
                     ),
                   ),
@@ -205,6 +244,119 @@ class _HomeScreenState extends State<HomeScreen> {
           // ── Bottom Navigation ──────────────────────────────────
           BottomNav(active: 'home', onNav: widget.onNav),
         ],
+      ),
+    );
+  }
+}
+
+// ── Home Sign Out Sheet ───────────────────────────────────────
+class _HomeSignOutSheet extends StatelessWidget {
+  final VoidCallback onConfirm;
+  const _HomeSignOutSheet({required this.onConfirm});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(28),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 36,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 24),
+              decoration: BoxDecoration(
+                color: AppColors.border,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+            Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: AppColors.red.withOpacity(0.08),
+                shape: BoxShape.circle,
+              ),
+              child: const Center(
+                child: Icon(Icons.logout_rounded,
+                    size: 26, color: AppColors.red),
+              ),
+            ),
+            const SizedBox(height: 18),
+            const Text(
+              'Sign out?',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.5,
+                color: AppColors.ink,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'You will need to sign back in to report and track hazards.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                color: AppColors.ink2,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 28),
+            GestureDetector(
+              onTap: onConfirm,
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  color: AppColors.red,
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: const Center(
+                  child: Text(
+                    'Yes, sign me out',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: const Center(
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.ink2,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
