@@ -445,7 +445,10 @@ class _SubmitScreenState extends State<SubmitScreen>
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 36),
                 child: GestureDetector(
-                  onTap: () => widget.onNav('home'),
+                  onTap: () {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                    widget.onNav('home');
+                  },
                   child: Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(vertical: 18),
